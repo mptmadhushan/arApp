@@ -44,27 +44,14 @@ const LoginScreen = ({navigation}) => {
     const username = userEmail;
     const password = userPassword;
     const payload = {username, password};
-    console.log('send data', payload);
-    navigation.navigate('Home');
-
-    // const onSuccess = ({data}) => {
-    //   setLoading(false);
-    //   storeData(data);
-    //   console.log('suc', data);
-    // };
-
-    // const onFailure = error => {
-    //   console.log('error', error);
-    //   setLoading(false);
-
-    //   // this.setState({errors: error.response.data, isLoading: false});
-    // };
-
-    // // Show spinner when call is made
-    // setLoading(true);
-
-    // APIKit.post('/auth/signin', payload).then(onSuccess).catch(onFailure);
+    if (username === 'dev' && password === 'password') {
+      console.log('send data', payload);
+      navigation.navigate('Home');
+      return;
+    }
+    setUserNameError(true);
   };
+
   return (
     <ImageBackground
       style={styles.mainBody}
@@ -253,7 +240,7 @@ const styles = StyleSheet.create({
   inputStyleError: {
     flex: 1,
     color: COLORS.third,
-    borderRadius: 30,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: 'red',
     paddingLeft: 15,

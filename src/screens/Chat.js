@@ -8,71 +8,29 @@ import {
 } from 'react-native';
 import {icons, images, SIZES, COLORS, FONTS} from '../helpers';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {WebView} from 'react-native-webview';
+import Loader from '../components/Loader';
 
 export default function Chat() {
-  return (
-    <View style={styles.container}>
-      <View style={styles.bottom}>
-        <View style={styles.chatWindow}>
-          <View style={styles.rowFlex}>
-            <View style={styles.avatar}>
-              <Icon name="logo-ionitron" size={25} color={COLORS.black} />
-            </View>
-            <View style={styles.bot}>
-              <Text style={styles.text001}>Hi..</Text>
-            </View>
-          </View>
-          <View style={styles.rowFlex}>
-            <View style={styles.avatar}>
-              <Icon name="logo-ionitron" size={25} color={COLORS.black} />
-            </View>
-            <View style={styles.bot}>
-              <Text style={styles.text001}>How Can I help you?</Text>
-            </View>
-          </View>
-          <View style={styles.rowFlexUser}>
-            <View style={styles.userChat}>
-              <Text style={styles.text002}>What can you do?</Text>
-            </View>
-            <View style={styles.avatarUser}>
-              <Icon
-                name="ios-person-circle-outline"
-                size={25}
-                color={COLORS.black}
-              />
-            </View>
-          </View>
-        </View>
-        <View style={styles.rowFlex}>
-          <View style={styles.SectionStyle}>
-            <TextInput
-              style={[
-                styles.inputStyle,
-                //   passwordError ? styles.inputStyleError : '',
-              ]}
-              // onChangeText={UserPassword => setUserPassword(UserPassword)}
-              placeholder="Enter text.." //12345
-              placeholderTextColor={COLORS.white}
-              keyboardType="default"
-              // ref={passwordInputRef}
-              // onSubmitEditing={Keyboard.dismiss}
-              blurOnSubmit={false}
-              secureTextEntry={true}
-              underlineColorAndroid="#f000"
-              returnKeyType="next"
-            />
-          </View>
-          <TouchableOpacity
-            onPress={() => console.log('hello')}
-            style={styles.slide1}>
-            <View style={styles.rowFlex}>
-              <Text style={styles.text001}>send</Text>
-              <Icon name="ios-hammer-outline" size={10} color={COLORS.white} />
-            </View>
-          </TouchableOpacity>
-        </View>
-      </View>
+  const [loading, setLoading] = React.useState(true);
+  // React.useEffect(() => {
+  //   setTimeout(() => {
+  //     setLoading(false);
+  //   }, 3000);
+  // });
+
+  const renderIndicator = (
+    <View>
+      <Loader />
     </View>
+  );
+  return (
+    <WebView
+      renderLoading={() => {
+        return renderIndicator();
+      }}
+      source={{uri: 'https://kosalaproject.000webhostapp.com/'}}
+    />
   );
 }
 
@@ -113,7 +71,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     alignContent: 'center',
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.secondary,
   },
   chatWindow: {
     flex: 1,
@@ -162,7 +120,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   text002: {
-    color: COLORS.black,
+    color: COLORS.white,
     marginRight: 16,
     fontSize: 15,
   },
