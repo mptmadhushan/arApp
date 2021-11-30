@@ -14,58 +14,51 @@ import {
   Image,
   ImageBackground,
   Keyboard,
+  Alert,
   TouchableOpacity,
   KeyboardAvoidingView,
 } from 'react-native';
 import {icons, images, SIZES, COLORS, FONTS} from '../helpers';
-import Toast from 'react-native-simple-toast';
-import APIKit, {setClientToken} from '../helpers/apiKit';
-
-import AsyncStorage from '@react-native-community/async-storage';
+import auth from '@react-native-firebase/auth';
 const RegisterScreen = ({navigation}) => {
-  const [userEmail, setUserEmail] = useState('');
-  const [userName, setUserName] = useState('');
-  const [userPassword, setUserPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [errortext, setErrortext] = useState('');
-  const [userNameError, setUserNameError] = useState(false);
-  const [passwordError, setPasswordError] = useState(false);
-
-  const passwordInputRef = createRef();
-  const storeData = async value => {
-    try {
-      const jsonValue = JSON.stringify(value);
-      await AsyncStorage.setItem('@storage_Key', jsonValue);
-      navigation.navigate('LogIn');
-    } catch (e) {
-      // saving error
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isValid, setValid] = useState(false);
+  const __doSignUp = () => {
+    const emailRegex = /^[^@ ]+@[^@ ]+\.[^@ ]+$/;
+    const __isValidEmail = emailRegex.test(email);
+    if (!email) {
+      setError('Email required *');
+      setValid(true);
+      return;
+    } else if (!password && password.trim() && password.length > 6) {
+      setError('Weak password, minimum 5 chars');
+      setValid(true);
+      return;
+    } else if (!__isValidEmail) {
+      setError('Invalid Email');
+      setValid(true);
+      return;
     }
+    __doCreateUser(email, password);
   };
-  const onPressLogin = () => {
-    const email = userEmail;
-    const password = userPassword;
-    const username = userName;
-    const roles = ['admin'];
-    const payload = {username, password, email, roles};
-    console.log('send data', payload);
 
-    const onSuccess = ({data}) => {
-      setLoading(false);
-      storeData(data);
-      console.log('suc', data);
-    };
+  const __doCreateUser = async (email, password) => {
+    try {
+      let response = await auth().createUserWithEmailAndPassword(
+        email,
+        password,
+      );
+      if (response && response.user) {
+        setValid(false);
+        setError();
 
-    const onFailure = error => {
-      console.log('error', error);
-      setLoading(false);
-
-      // this.setState({errors: error.response.data, isLoading: false});
-    };
-
-    // Show spinner when call is made
-    setLoading(true);
-
-    APIKit.post('auth/signUp', payload).then(onSuccess).catch(onFailure);
+        Alert.alert('Success', 'Account created successfully.. please login');
+      }
+    } catch (e) {
+      console.error(e.message);
+    }
   };
   return (
     <ImageBackground
@@ -91,112 +84,62 @@ const RegisterScreen = ({navigation}) => {
                 width: SIZES.width * 0.3,
                 height: SIZES.width * 0.3,
                 marginBottom: SIZES.height * 0.1,
-                // tintColor: focused ? COLORS.primary : COLORS.secondary,
               }}
             />
           </View>
           <View style={styles.rowFlex}>
-            {/* <Image
-              source={images.logo}
-              resizeMode="contain"
-              style={{
-                width: 20,
-                height: 20,
-              }}
-            /> */}
             <View style={styles.SectionStyle}>
               <TextInput
-                style={[
-                  styles.inputStyle,
-                  userNameError ? styles.inputStyleError : '',
-                ]}
-                onChangeText={UserName => setUserName(UserName)}
-                placeholder="First Name"
-                placeholderTextColor={COLORS.white}
-                autoCapitalize="none"
+                label={'Email'}
                 keyboardType="email-address"
-                returnKeyType="next"
-                onSubmitEditing={() =>
-                  passwordInputRef.current && passwordInputRef.current.focus()
-                }
-                underlineColorAndroid="#f000"
-                blurOnSubmit={false}
+                style={[isValid ? styles.inputStyleError : styles.inputStyle]}
+                placeholder="Mail address"
+                placeholderTextColor={COLORS.white}
+                onChangeText={text => {
+                  setError;
+                  setEmail(text);
+                }}
+                error={isValid}
               />
             </View>
           </View>
           <View style={styles.rowFlex}>
-            {/* <Image
-              source={images.logo}
-              resizeMode="contain"
-              style={{
-                width: 20,
-                height: 20,
-              }}
-            /> */}
             <View style={styles.SectionStyle}>
               <TextInput
+                label={'Password'}
+                secureTextEntry
                 style={[
                   styles.inputStyle,
-                  userNameError ? styles.inputStyleError : '',
+                  isValid ? styles.inputStyleError : '',
                 ]}
-                onChangeText={UserEmail => setUserEmail(UserEmail)}
-                placeholder="Last Name"
+                placeholder="Password"
                 placeholderTextColor={COLORS.white}
-                autoCapitalize="none"
-                keyboardType="email-address"
-                returnKeyType="next"
-                onSubmitEditing={() =>
-                  passwordInputRef.current && passwordInputRef.current.focus()
-                }
-                underlineColorAndroid="#f000"
-                blurOnSubmit={false}
+                error={isValid}
+                onChangeText={text => setPassword(text)}
               />
             </View>
           </View>
 
-          <View style={styles.rowFlex}>
-            {/* <Image
-              source={icons.lock}
-              resizeMode="contain"
-              style={{
-                width: 20,
-                height: 20,
-              }}
-            /> */}
-            <View style={styles.SectionStyle}>
-              <TextInput
-                style={[
-                  styles.inputStyle,
-                  passwordError ? styles.inputStyleError : '',
-                ]}
-                onChangeText={UserPassword => setUserPassword(UserPassword)}
-                placeholder="Password" //12345
-                placeholderTextColor={COLORS.white}
-                keyboardType="default"
-                ref={passwordInputRef}
-                onSubmitEditing={Keyboard.dismiss}
-                blurOnSubmit={false}
-                secureTextEntry={true}
-                underlineColorAndroid="#f000"
-                returnKeyType="next"
-              />
-            </View>
-          </View>
           <View style={styles.centerFlex}>
             <View style={styles.centerFlex}>
               <TouchableOpacity
                 // style={styles.buttonStyle2}
                 activeOpacity={0.5}
                 onPress={() => navigation.navigate('LogIn')}>
-                <Text style={styles.buttonTextStyle2}>
-                  Don't have an account? register here.
-                </Text>
+                {error ? (
+                  <Text style={styles.errorTextStyle}>{error}</Text>
+                ) : (
+                  <Text style={styles.buttonTextStyle2}>
+                    have an account? login here.
+                  </Text>
+                )}
               </TouchableOpacity>
             </View>
+
             <TouchableOpacity
               style={styles.buttonStyle}
               activeOpacity={0.5}
-              onPress={() => onPressLogin()}>
+              onPress={() => __doSignUp()}>
               <Text style={styles.buttonTextStyle}>Register</Text>
             </TouchableOpacity>
           </View>
@@ -238,9 +181,7 @@ const styles = StyleSheet.create({
   },
   SectionStyle: {
     // backgroundColor: COLORS.secondary,
-    borderRadius: 10,
-    borderColor: COLORS.white,
-    borderWidth: 1,
+    // borderColor: COLORS.white,
     height: 40,
     marginRight: 35,
     margin: 10,
@@ -248,6 +189,7 @@ const styles = StyleSheet.create({
   buttonStyle: {
     backgroundColor: COLORS.primary,
     borderWidth: 0,
+    marginTop: 50,
     color: COLORS.white,
     height: 40,
     width: 130,
@@ -261,16 +203,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   inputStyle: {
+    borderWidth: 1,
+    borderRadius: 10,
     flex: 1,
-    color: COLORS.third,
+    color: COLORS.primary,
     paddingLeft: 15,
     paddingRight: 15,
+    borderColor: COLORS.white,
     width: SIZES.width * 0.7,
   },
   inputStyleError: {
     flex: 1,
     color: COLORS.third,
-    borderRadius: 30,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: 'red',
     paddingLeft: 15,
@@ -287,7 +232,11 @@ const styles = StyleSheet.create({
   },
   errorTextStyle: {
     color: 'red',
-    textAlign: 'center',
+    textAlign: 'right',
     fontSize: 14,
+    fontWeight: 'bold',
+    paddingTop: 10,
+    paddingBottom: 10,
+    marginLeft: SIZES.width * 0.3,
   },
 });

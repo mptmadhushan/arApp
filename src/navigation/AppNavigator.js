@@ -6,7 +6,6 @@ import LogIn from '../screens/LogIn';
 import Home from '../screens/Home';
 import Register from '../screens/Register';
 import Chat from '../screens/Chat';
-import PlanBuilderUpload from '../screens/PlanBuilderUpload';
 import {TapGestureHandler} from 'react-native-gesture-handler';
 
 const Stack = createStackNavigator();
@@ -38,11 +37,6 @@ function MainStackNavigator() {
           name="Register"
           options={{headerShown: false}}
           component={Register}
-        />
-        <Stack.Screen
-          name="PlanBuilderUpload"
-          options={{headerShown: false}}
-          component={PlanBuilderUpload}
         />
         <Stack.Screen
           name="Chat"

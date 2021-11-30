@@ -3,7 +3,7 @@
 // https://aboutreact.com/react-native-login-and-signup/
 
 // Import React and Component
-import React, {useState, createRef} from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   TextInput,
@@ -13,45 +13,29 @@ import {
   ScrollView,
   Image,
   ImageBackground,
-  Keyboard,
   TouchableOpacity,
   KeyboardAvoidingView,
 } from 'react-native';
-import {icons, images, SIZES, COLORS, FONTS} from '../helpers';
-import Toast from 'react-native-simple-toast';
-import APIKit, {setClientToken} from '../helpers/apiKit';
-
-import AsyncStorage from '@react-native-community/async-storage';
+import {images, SIZES, COLORS, FONTS} from '../helpers';
+import auth from '@react-native-firebase/auth';
 const LoginScreen = ({navigation}) => {
-  const [userEmail, setUserEmail] = useState('');
-  const [userPassword, setUserPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [errortext, setErrortext] = useState('');
-  const [userNameError, setUserNameError] = useState(false);
-  const [passwordError, setPasswordError] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isValid, setValid] = useState(false);
 
-  const passwordInputRef = createRef();
-  const storeData = async value => {
+  const __doSingIn = async () => {
     try {
-      const jsonValue = JSON.stringify(value);
-      await AsyncStorage.setItem('@storage_Key', jsonValue);
-      navigation.navigate('Home');
+      let response = await auth().signInWithEmailAndPassword(email, password);
+      if (response && response.user) {
+        navigation.navigate('Home', {response});
+      }
     } catch (e) {
-      // saving error
+      console.error(e.message);
+      setValid(true);
+      setError(e.message);
     }
   };
-  const onPressLogin = () => {
-    const username = userEmail;
-    const password = userPassword;
-    const payload = {username, password};
-    if (username === 'dev' && password === 'password') {
-      console.log('send data', payload);
-      navigation.navigate('Home');
-      return;
-    }
-    setUserNameError(true);
-  };
-
   return (
     <ImageBackground
       style={styles.mainBody}
@@ -59,100 +43,80 @@ const LoginScreen = ({navigation}) => {
       <ScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{
+          flex: 1,
           justifyContent: 'center',
+          width: SIZES.width,
           alignItems: 'center',
           alignContent: 'center',
-          width: SIZES.width,
           backgroundColor: 'rgba(0,0,0,0.5)',
-          flex: 1,
         }}>
-        <View style={styles.centerFlex}>
-          <Image
-            source={images.logo}
-            resizeMode="contain"
-            style={{
-              width: SIZES.width * 0.3,
-              height: SIZES.width * 0.3,
-              marginBottom: SIZES.height * 0.05,
-              // tintColor: focused ? COLORS.primary : COLORS.secondary,
-            }}
-          />
-        </View>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-          <View style={styles.rowFlex}>
-            {/* <Image
+          <View style={styles.centerFlex}>
+            <Image
               source={images.logo}
               resizeMode="contain"
               style={{
-                width: 20,
-                height: 20,
+                width: SIZES.width * 0.3,
+                height: SIZES.width * 0.3,
+                marginBottom: SIZES.height * 0.1,
               }}
-            /> */}
+            />
+          </View>
+          <View style={styles.rowFlex}>
             <View style={styles.SectionStyle}>
               <TextInput
-                style={[
-                  styles.inputStyle,
-                  userNameError ? styles.inputStyleError : '',
-                ]}
-                onChangeText={UserEmail => setUserEmail(UserEmail)}
-                placeholder="Username"
-                placeholderTextColor={COLORS.white}
-                autoCapitalize="none"
+                label={'Email'}
                 keyboardType="email-address"
-                returnKeyType="next"
-                onSubmitEditing={() =>
-                  passwordInputRef.current && passwordInputRef.current.focus()
-                }
-                underlineColorAndroid="#f000"
-                blurOnSubmit={false}
+                style={[isValid ? styles.inputStyleError : styles.inputStyle]}
+                placeholder="Mail address"
+                placeholderTextColor={COLORS.white}
+                onChangeText={text => {
+                  setError;
+                  setEmail(text);
+                }}
+                error={isValid}
               />
             </View>
           </View>
           <View style={styles.rowFlex}>
-            {/* <Image
-              source={icons.lock}
-              resizeMode="contain"
-              style={{
-                width: 20,
-                height: 20,
-              }}
-            /> */}
             <View style={styles.SectionStyle}>
               <TextInput
+                label={'Password'}
+                secureTextEntry
                 style={[
                   styles.inputStyle,
-                  passwordError ? styles.inputStyleError : '',
+                  isValid ? styles.inputStyleError : '',
                 ]}
-                onChangeText={UserPassword => setUserPassword(UserPassword)}
-                placeholder="Password" //12345
+                placeholder="Password"
                 placeholderTextColor={COLORS.white}
-                keyboardType="default"
-                ref={passwordInputRef}
-                onSubmitEditing={Keyboard.dismiss}
-                blurOnSubmit={false}
-                secureTextEntry={true}
-                underlineColorAndroid="#f000"
-                returnKeyType="next"
+                error={isValid}
+                onChangeText={text => setPassword(text)}
               />
             </View>
           </View>
+
           <View style={styles.centerFlex}>
             <View style={styles.centerFlex}>
               <TouchableOpacity
                 // style={styles.buttonStyle2}
                 activeOpacity={0.5}
                 onPress={() => navigation.navigate('Register')}>
-                <Text style={styles.buttonTextStyle2}>
-                  Don't have an account? register here.
-                </Text>
+                {error ? (
+                  <Text style={styles.errorTextStyle}>{error}</Text>
+                ) : (
+                  <Text style={styles.buttonTextStyle2}>
+                    don't have an account? register here.
+                  </Text>
+                )}
               </TouchableOpacity>
             </View>
+
             <TouchableOpacity
               style={styles.buttonStyle}
               activeOpacity={0.5}
-              onPress={() => onPressLogin()}>
-              <Text style={styles.buttonTextStyle}>Login</Text>
+              onPress={() => __doSingIn()}>
+              <Text style={styles.buttonTextStyle}>LogIn</Text>
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
@@ -168,6 +132,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignContent: 'center',
   },
+  buttonTextStyle2: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: 'bold',
+    textAlign: 'right',
+    paddingTop: 10,
+    paddingBottom: 10,
+    marginLeft: SIZES.width * 0.3,
+  },
   rowFlex: {
     flexDirection: 'row',
     // flex: 1,
@@ -182,14 +155,9 @@ const styles = StyleSheet.create({
     // alignItems: 'flex-end',
     justifyContent: 'center',
   },
-  child: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
   SectionStyle: {
-    borderRadius: 10,
-    borderColor: COLORS.white,
-    borderWidth: 1,
+    // backgroundColor: COLORS.secondary,
+    // borderColor: COLORS.white,
     height: 40,
     marginRight: 35,
     margin: 10,
@@ -197,44 +165,27 @@ const styles = StyleSheet.create({
   buttonStyle: {
     backgroundColor: COLORS.primary,
     borderWidth: 0,
+    marginTop: 50,
     color: COLORS.white,
     height: 40,
     width: 130,
-    marginTop: 20,
     alignItems: 'center',
     borderRadius: 10,
     justifyContent: 'center',
   },
-  buttonStyle2: {
-    backgroundColor: COLORS.primary,
-    borderWidth: 0,
-    color: COLORS.white,
-    height: 30,
-    width: 130,
-    alignItems: 'center',
-    borderRadius: 30,
-    justifyContent: 'center',
-    marginTop: 10,
-  },
   buttonTextStyle: {
     color: '#FFFFFF',
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
-  },
-  buttonTextStyle2: {
-    color: '#FFFFFF',
-    fontSize: 10,
-    fontWeight: 'bold',
-    textAlign: 'right',
-    marginLeft: SIZES.width * 0.3,
-    paddingTop: 10,
-    paddingBottom: 10,
   },
   inputStyle: {
+    borderWidth: 1,
+    borderRadius: 10,
     flex: 1,
-    color: COLORS.white,
+    color: COLORS.primary,
     paddingLeft: 15,
-    // paddingRight: 15,
+    paddingRight: 15,
+    borderColor: COLORS.white,
     width: SIZES.width * 0.7,
   },
   inputStyleError: {
@@ -257,7 +208,11 @@ const styles = StyleSheet.create({
   },
   errorTextStyle: {
     color: 'red',
-    textAlign: 'center',
-    fontSize: 14,
+    textAlign: 'right',
+    fontSize: 12,
+    fontWeight: 'bold',
+    paddingTop: 10,
+    paddingBottom: 10,
+    marginLeft: SIZES.width * 0.05,
   },
 });

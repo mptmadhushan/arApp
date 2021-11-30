@@ -35,8 +35,11 @@
         android:windowSoftInputMode="adjustResize">
      
         <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
+            <!-- <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" /> -->
+            <action android:name="com.scytec.datamobile.vd.gui.android.AppPreferenceActivity" />  
+            <category android:name="android.intent.category.DEFAULT" />  
+            <data android:scheme="app" android:host="Drive" />
         </intent-filter>
       </activity>
     </application>

@@ -1,19 +1,21 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import {
   View,
-  Image,
   TouchableOpacity,
   ImageBackground,
   Text,
   StyleSheet,
 } from 'react-native';
-import {icons, images, SIZES, COLORS, FONTS} from '../helpers';
+import {SIZES, COLORS, FONTS} from '../helpers';
 import Icon from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
+import OpenApplication from 'react-native-open-application';
 
-export default function Home({navigation}) {
-  useEffect(() => {}, []);
+export default function Home({navigation, route}) {
+  const response = route.params.response;
+  const email = response?.user.email;
+  const name = email.split('@')[0];
 
   return (
     <ImageBackground
@@ -26,12 +28,14 @@ export default function Home({navigation}) {
           style={{
             marginTop: SIZES.height * 0.3,
           }}>
-          <Text style={styles.title2}>Hello Kiley!</Text>
+          {name ? <Text style={styles.title2}>Hello {name}!</Text> : null}
           <Text style={styles.title1}>What's new today?</Text>
         </View>
         <View style={styles.rowNorm}>
           <TouchableOpacity
-            onPress={() => navigation.navigate('PlanBuilderUpload')}
+            onPress={() =>
+              OpenApplication.openApplication('com.DefaultCompany.ArFurniture')
+            }
             style={styles.slide1}>
             <View style={styles.centerFlex}>
               <Icon name="rocket-outline" size={50} color={COLORS.white} />
@@ -47,7 +51,9 @@ export default function Home({navigation}) {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => console.log('hello')}
+            onPress={() =>
+              OpenApplication.openApplication('com.example.secondar')
+            }
             style={styles.slide1}>
             <View style={styles.centerFlex}>
               <Icon name="ios-hammer-outline" size={50} color={COLORS.white} />

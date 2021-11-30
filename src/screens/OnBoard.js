@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  View,
   StyleSheet,
   TouchableOpacity,
   Text,
@@ -8,6 +7,7 @@ import {
 } from 'react-native';
 import {icons, images, SIZES, COLORS, FONTS} from '../helpers';
 import LinearGradient from 'react-native-linear-gradient';
+
 export default function OnBoard({navigation}) {
   return (
     <ImageBackground
@@ -20,7 +20,6 @@ export default function OnBoard({navigation}) {
         </Text>
         <TouchableOpacity
           onPress={() => {
-            // navigation.navigate('Home');
             navigation.navigate('LogIn');
           }}
           style={styles.btn}>
