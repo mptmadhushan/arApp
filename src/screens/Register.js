@@ -55,6 +55,7 @@ const RegisterScreen = ({navigation}) => {
         setError();
 
         Alert.alert('Success', 'Account created successfully.. please login');
+        navigation.navigate('LogIn');
       }
     } catch (e) {
       console.error(e.message);

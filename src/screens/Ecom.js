@@ -1,13 +1,8 @@
 import React, {useState} from 'react';
 import {WebView} from 'react-native-webview';
 import {View, ActivityIndicator, StyleSheet, SafeAreaView} from 'react-native';
-export default function Chat() {
+export default function Ecom() {
   const [visible, setVisible] = useState(false);
-  const ActivityIndicatorElement = () => {
-    <View style={styles.ActivityIndicatorStyle}>
-      <ActivityIndicator color="#0000ff" size={'large'} />
-    </View>;
-  };
   return (
     <SafeAreaView style={{flex: 1}}>
       <WebView
@@ -18,7 +13,11 @@ export default function Chat() {
         onLoadStart={() => setVisible(true)}
         onLoad={() => setVisible(false)}
       />
-      {visible && <ActivityIndicatorElement />}
+      {visible && (
+        <View style={styles.ActivityIndicatorStyle}>
+          <ActivityIndicator color="#0000ff" size={'large'} />
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -35,5 +34,6 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
 });
