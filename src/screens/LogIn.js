@@ -3,7 +3,7 @@
 // https://aboutreact.com/react-native-login-and-signup/
 
 // Import React and Component
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   TextInput,
@@ -15,15 +15,34 @@ import {
   ImageBackground,
   TouchableOpacity,
   KeyboardAvoidingView,
+  Button,
 } from 'react-native';
 import {images, SIZES, COLORS, FONTS} from '../helpers';
 import auth from '@react-native-firebase/auth';
+import {GoogleSignin} from '@react-native-community/google-signin';
 const LoginScreen = ({navigation}) => {
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId:
+        '640589064284-ogqsv05s7evda86ad6cutia0500ch9b9.apps.googleusercontent.com',
+    });
+  });
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isValid, setValid] = useState(false);
 
+  async function onGoogleButtonPress() {
+    // Get the users ID token
+    const {idToken} = await GoogleSignin.signIn();
+
+    // Create a Google credential with the token
+    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+    // Sign-in the user with the credential
+    return auth().signInWithCredential(googleCredential);
+  }
   const __doSingIn = async () => {
     try {
       let response = await auth().signInWithEmailAndPassword(email, password);
@@ -118,6 +137,14 @@ const LoginScreen = ({navigation}) => {
               onPress={() => __doSingIn()}>
               <Text style={styles.buttonTextStyle}>LogIn</Text>
             </TouchableOpacity>
+            {/* <Button
+              title="Google Sign-In"
+              onPress={() =>
+                onGoogleButtonPress().then(() =>
+                  console.log('Signed in with Google!'),
+                )
+              }
+            /> */}
           </View>
         </KeyboardAvoidingView>
       </ScrollView>

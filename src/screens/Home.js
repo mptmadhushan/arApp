@@ -11,11 +11,44 @@ import {SIZES, COLORS, FONTS} from '../helpers';
 import Icon from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
 import OpenApplication from 'react-native-open-application';
+import storage from '@react-native-firebase/storage';
+import * as ImagePicker from 'react-native-image-picker';
 
 export default function Home({navigation, route}) {
   const response = route.params.response;
   const email = response?.user.email;
   const name = email.split('@')[0];
+
+  const launchImageLibrary = () => {
+    let options = {
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    ImagePicker.launchImageLibrary(options, response => {
+      console.log('Response = ', response.assets[0].uri);
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+        alert(response.customButton);
+      } else {
+        const reference = storage().ref(response.assets[0].fileName);
+        const task = reference.putFile(response.assets[0].uri);
+        task
+          // .then(response => response.json())
+          .then(response => {
+            console.log('response 🔥', response.flag);
+            console.log(response);
+            OpenApplication.openApplication('com.DefaultCompany.ArFurniture');
+          })
+          .catch(err => console.error(err));
+      }
+    });
+  };
 
   return (
     <ImageBackground
@@ -33,8 +66,29 @@ export default function Home({navigation, route}) {
         </View>
         <View style={styles.rowNorm}>
           <TouchableOpacity
+            onPress={() => navigation.navigate('Ecom')}
+            style={styles.slide1}>
+            <View style={styles.centerFlex}>
+              <Icon name="ios-cart-outline" size={50} color={COLORS.white} />
+              <Text style={styles.text001}>E-Commerce</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
             onPress={() =>
-              OpenApplication.openApplication('com.DefaultCompany.ArFurniture')
+              OpenApplication.openApplication('com.example.secondar')
+            }
+            style={styles.slide1}>
+            <View style={styles.centerFlex}>
+              <Icon name="ios-hammer-outline" size={50} color={COLORS.white} />
+              <Text style={styles.text001}>3D Model</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.rowNorm}>
+          <TouchableOpacity
+            onPress={
+              () => launchImageLibrary()
+              // OpenApplication.openApplication('com.DefaultCompany.ArFurniture')
             }
             style={styles.slide1}>
             <View style={styles.centerFlex}>
@@ -48,16 +102,6 @@ export default function Home({navigation, route}) {
             <View style={styles.centerFlex}>
               <Icon name="chatbubbles-outline" size={50} color={COLORS.white} />
               <Text style={styles.text001}>Chat Bot</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() =>
-              OpenApplication.openApplication('com.example.secondar')
-            }
-            style={styles.slide1}>
-            <View style={styles.centerFlex}>
-              <Icon name="ios-hammer-outline" size={50} color={COLORS.white} />
-              <Text style={styles.text001}>3D Model</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -106,11 +150,11 @@ const styles = StyleSheet.create({
   rowNorm: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     flex: 1,
     flexWrap: 'wrap',
     maxWidth: SIZES.width,
-    marginTop: SIZES.height * 0.1,
+    marginTop: SIZES.height * 0.01,
     marginLeft: SIZES.width * 0.06,
     marginRight: SIZES.width * 0.06,
   },
