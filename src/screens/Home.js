@@ -15,9 +15,9 @@ import storage from '@react-native-firebase/storage';
 import * as ImagePicker from 'react-native-image-picker';
 
 export default function Home({navigation, route}) {
-  const response = route.params.response;
-  const email = response?.user.email;
-  const name = email.split('@')[0];
+  // const response = route.params.response;
+  // const email = response?.user.email;
+  // const name = email.split('@')[0];
 
   const launchImageLibrary = () => {
     let options = {
@@ -53,7 +53,7 @@ export default function Home({navigation, route}) {
   return (
     <ImageBackground
       style={styles.container}
-      source={require('../assets/images/HOMEHOUSE.jpeg')}>
+      source={require('../assets/food2.jpeg')}>
       <LinearGradient
         colors={['transparent', COLORS.black, COLORS.black]}
         style={styles.overlay}>
@@ -61,50 +61,32 @@ export default function Home({navigation, route}) {
           style={{
             marginTop: SIZES.height * 0.3,
           }}>
-          {name ? <Text style={styles.title2}>Hello {name}!</Text> : null}
-          <Text style={styles.title1}>What's new today?</Text>
+          <Text style={styles.title2}>Hello Fred!</Text>
+          <Text style={styles.title21}>What's new today?</Text>
         </View>
-        <View style={styles.rowNorm}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Ecom')}
-            style={styles.slide1}>
-            <View style={styles.centerFlex}>
-              <Icon name="ios-cart-outline" size={50} color={COLORS.white} />
-              <Text style={styles.text001}>E-Commerce</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() =>
-              OpenApplication.openApplication('com.example.secondar')
-            }
-            style={styles.slide1}>
-            <View style={styles.centerFlex}>
-              <Icon name="ios-hammer-outline" size={50} color={COLORS.white} />
-              <Text style={styles.text001}>3D Model</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.rowNorm}>
-          <TouchableOpacity
-            onPress={
-              () => launchImageLibrary()
-              // OpenApplication.openApplication('com.DefaultCompany.ArFurniture')
-            }
-            style={styles.slide1}>
-            <View style={styles.centerFlex}>
-              <Icon name="rocket-outline" size={50} color={COLORS.white} />
-              <Text style={styles.text001}>Plan Builder</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Chat')}
-            style={styles.slide1}>
-            <View style={styles.centerFlex}>
-              <Icon name="chatbubbles-outline" size={50} color={COLORS.white} />
-              <Text style={styles.text001}>Chat Bot</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
+
+        {/* <View style={styles.rowNorm}> */}
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Instruction')}
+          style={styles.slide1}>
+          <View style={styles.centerFlex}>
+            <Icon
+              name="ios-information-circle-outline"
+              size={50}
+              color={COLORS.white}
+            />
+            <Text style={styles.text001}>Instructions</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Chat')}
+          style={styles.slide1}>
+          <View style={styles.centerFlex}>
+            <Icon name="chatbubbles-outline" size={50} color={COLORS.white} />
+            <Text style={styles.text001}>Chat Bot</Text>
+          </View>
+        </TouchableOpacity>
+        {/* </View> */}
       </LinearGradient>
     </ImageBackground>
   );
@@ -117,9 +99,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 5,
-    flex: 1,
-    maxWidth: SIZES.width * 0.25,
+    maxWidth: SIZES.width * 0.7,
     height: SIZES.width * 0.25,
+    marginLeft: SIZES.width * 0.15,
+    marginRight: SIZES.width * 0.15,
+    marginTop: SIZES.height * 0.02,
   },
   centerFlex: {
     justifyContent: 'center',
@@ -131,6 +115,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: SIZES.width * 0.06,
     fontSize: 25,
+    textAlign: 'center',
+  },
+  title21: {
+    color: COLORS.white,
+    marginLeft: SIZES.width * 0.06,
+    fontSize: 20,
+    textAlign: 'center',
   },
   text001: {
     color: COLORS.white,

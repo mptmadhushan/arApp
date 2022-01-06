@@ -12,15 +12,15 @@ export default function OnBoard({navigation}) {
   return (
     <ImageBackground
       style={styles.container}
-      source={require('../assets/images/arBg.jpeg')}>
+      source={require('../assets/foodbg.jpeg')}>
       <LinearGradient colors={['transparent', 'white']} style={styles.overlay}>
-        <Text style={styles.title2}>Your Dream Space</Text>
+        <Text style={styles.title2}>Live, love, eat.</Text>
         <Text style={styles.title}>
-          Find your perfect dream space with just a few clicks
+          Good food never fail in bringing people together.
         </Text>
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate('LogIn');
+            navigation.navigate('Home');
           }}
           style={styles.btn}>
           <Text style={styles.btnText}>Let's Start</Text>

@@ -6,7 +6,7 @@ import LogIn from '../screens/LogIn';
 import Home from '../screens/Home';
 import Register from '../screens/Register';
 import Chat from '../screens/Chat';
-import Ecom from '../screens/Ecom';
+import Instruction from '../screens/Instruction';
 import {TapGestureHandler} from 'react-native-gesture-handler';
 
 const Stack = createStackNavigator();
@@ -30,9 +30,9 @@ function MainStackNavigator() {
           component={OnBoard}
         />
         <Stack.Screen
-          name="Ecom"
+          name="Instruction"
           options={{headerShown: false}}
-          component={Ecom}
+          component={Instruction}
         />
         <Stack.Screen
           name="LogIn"
